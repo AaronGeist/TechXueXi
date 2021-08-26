@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import sys
 import time
@@ -36,6 +37,13 @@ def get_argv():
             stime = argv[4]
     return nohead, lock, stime
 
+def get_opt():
+    print(argv)
+    if len(argv) > 1:
+        return argv[1]
+    else:
+        return None
+
 
 if __name__ == '__main__':
     #  0 读取版本信息
@@ -56,11 +64,11 @@ if __name__ == '__main__':
     print("=" * 60, '''\nTechXueXi 现支持以下模式（答题时请值守电脑旁处理少部分不正常的题目）：''')
     print(cfg['base']['ModeText'] + '\n' + "=" * 60) # 模式提示文字请在 ./config/default_template.conf 处修改。
     
-    try:
-        if cfg["base"]["ModeType"]:
-            print("默认选择模式：" + str(cfg["base"]["ModeType"]) + "\n" + "=" * 60)
-            TechXueXi_mode = str(cfg["base"]["ModeType"])
-    except Exception as e:
+    opt = get_opt()
+    if opt:
+        print("默认选择模式：" + opt + "\n" + "=" * 60)
+        TechXueXi_mode = opt
+    else:
         TechXueXi_mode = input("请选择模式（输入对应数字）并回车： ")
 
     info_shread = threads.MyThread("获取更新信息...", version.up_info)
