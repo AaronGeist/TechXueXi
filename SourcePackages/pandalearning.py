@@ -97,15 +97,18 @@ if __name__ == '__main__':
         video_thread.start()
         article_thread.join()
         video_thread.join()
-    if TechXueXi_mode in ["2", "3"]:
+    if TechXueXi_mode in [ "daily", "weekly", "special"]:
         driver_default = Mydriver(nohead=False)
-        print('开始每日答题……')
-        daily(cookies, scores, driver_default=driver_default)
-        if TechXueXi_mode in ["2", "3"]:
+        if TechXueXi_mode == "daily":
+            print('开始每日答题……')
+            daily(cookies, scores, driver_default=driver_default)
+        elif TechXueXi_mode == "weekly":
             print('开始每周答题……')
             weekly(cookies, scores, driver_default=driver_default)
+        else:
             print('开始专项答题……')
             zhuanxiang(cookies, scores, driver_default=driver_default)
+
         try:
             driver_default.quit()
         except Exception as e:
