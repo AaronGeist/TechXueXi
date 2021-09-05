@@ -41,6 +41,8 @@ def find_available_quiz(quiz_type, driver_ans, uid):
 
 
 def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_xpath, uid=None, driver_default=None):
+    success = False
+
     quiz_zh_CN={"daily": "每日", "weekly": "每周", "zhuanxiang": "专项"}
     if(quiz_type not in ["daily", "weekly", "zhuanxiang"]):
         print("quiz_type 错误。收到的quiz_type："+quiz_type)
@@ -120,35 +122,37 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                     log_daily("【提示信息】")
                     log_daily(str(tips)+"\n"+tip_full_text)
                 if not tips:
-                    print("本题没有提示")
-                    pass_count += 1
-                    if pass_count >= 5:  #####
-                        print("暂时略过已达到 5 次，【 建议您将此题目的题干、提示、选项信息提交到github问题收集issue：https://github.com/TechXueXi/TechXueXi/issues/29 】")
-                        auto.prompt("等待用户手动答题...完成后请在此按回车...")
-                        pass_count = 0
-                    if quiz_type == "daily":  #####
-                        log_daily("！！！！！本题没有找到提示，暂时略过！！！！！")
-                        auto.prompt("等待用户手动答题...完成后请在此按回车...")
-                        time.sleep(1)
-                    if "填空题" in category:
-                        print('没有找到提示，暂时略过')
-                        ##### print('使用默认答案  好 ')   #如无填空答案，使用默认答案 好 字 by Sean
-                        ##### tips = ['好']
-                        continue  #####
-                    elif "多选题" in category:
-                        print('没有找到提示，暂时略过')
-                        ##### print('使用默认答案 全选')    #by Sean
-                        continue  #####
-                    elif "单选题" in category:
-                        print('没有找到提示，暂时略过')  # 如无单选答案，使用默认答案
-                        ##### print('使用默认答案 B')   #by Sean
-                        continue  #####
-                        # return driver_daily._search(driver_daily.content, driver_daily.options, driver_daily.excludes)
-                    else:
-                        print("题目类型非法")
-                        if quiz_type == "daily":
-                            log_daily("！！！！！无提示，题目类型非法！！！！！")
-                        break
+                    print("本题没有提示" * 3)
+                    # no answer found, retry
+                    break
+                    # pass_count += 1
+                    # if pass_count >= 5:  #####
+                    #     print("暂时略过已达到 5 次，【 建议您将此题目的题干、提示、选项信息提交到github问题收集issue：https://github.com/TechXueXi/TechXueXi/issues/29 】")
+                    #     auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                    #     pass_count = 0
+                    # if quiz_type == "daily":  #####
+                    #     log_daily("！！！！！本题没有找到提示，暂时略过！！！！！")
+                    #     auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                    #     time.sleep(1)
+                    # if "填空题" in category:
+                    #     print('没有找到提示，暂时略过')
+                    #     ##### print('使用默认答案  好 ')   #如无填空答案，使用默认答案 好 字 by Sean
+                    #     ##### tips = ['好']
+                    #     continue  #####
+                    # elif "多选题" in category:
+                    #     print('没有找到提示，暂时略过')
+                    #     ##### print('使用默认答案 全选')    #by Sean
+                    #     continue  #####
+                    # elif "单选题" in category:
+                    #     print('没有找到提示，暂时略过')  # 如无单选答案，使用默认答案
+                    #     ##### print('使用默认答案 B')   #by Sean
+                    #     continue  #####
+                    #     # return driver_daily._search(driver_daily.content, driver_daily.options, driver_daily.excludes)
+                    # else:
+                    #     print("题目类型非法")
+                    #     if quiz_type == "daily":
+                    #         log_daily("！！！！！无提示，题目类型非法！！！！！")
+                    #     break
                 else:
                     if "填空题" in category:
                         answer = tips
@@ -369,9 +373,10 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
             total, scores = show_score(cookies)
             if scores[quiz_type] >= score_all:
                 print("检测到"+quiz_zh_CN[quiz_type]+"答题分数已满,退出学 xi ")
+                success = True
             else:
-                print("！！！！！没拿到满分，请收集日志反馈错误题目！！！！！")
-                auto.prompt("完成后（或懒得弄）请在此按回车...")
+                print("！！！！！没拿到满分，重试一次！！！！！")
+                # auto.prompt("完成后（或懒得弄）请在此按回车...")
                 #log_daily("！！！！！没拿到满分！！！！！")
         if driver_default == None:
             try:
@@ -382,6 +387,9 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
             pass #其他函数传入函数的driver，不自动退出
     else:
         print(quiz_zh_CN[quiz_type]+"答题已满分.")
+        success = True
+
+    return success
 
 
 
@@ -390,7 +398,9 @@ def daily(cookies, scores, driver_default=None):
     score_all = const.daily_all
     quiz_xpath = '//*[@id="app"]/div/div[2]/div/div[3]/div[2]/div[5]/div[2]/div[2]/div'
     category_xpath = '//*[@id="app"]/div/div[2]/div/div[4]/div[1]/div[1]'
-    answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_xpath, driver_default=driver_default)
+    for i in range(5):
+        if answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_xpath, driver_default=driver_default):
+            break
 
 
 def weekly(cookies, scores, driver_default=None):
@@ -398,7 +408,9 @@ def weekly(cookies, scores, driver_default=None):
     score_all = const.weekly_all
     quiz_xpath = '//*[@id="app"]/div/div[2]/div/div[3]/div[2]/div[6]/div[2]/div[2]/div'
     category_xpath = '//*[@id="app"]/div/div[2]/div/div[4]/div[1]/div[1]'
-    answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_xpath, driver_default=driver_default)
+    for i in range(5):
+        if answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_xpath, driver_default=driver_default):
+            break
 
 
 def zhuanxiang(cookies, scores, driver_default=None):
