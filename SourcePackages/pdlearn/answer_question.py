@@ -192,7 +192,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                 ##### len_option = len(options)
                                 ##### radio_in_tips = letters[:len_option]
                                 ##### driver_daily.radio_check(radio_in_tips)
-                                auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                                break
                         elif quiz_type == "weekly":
                             options = driver_weekly.radio_get_options()
                             radio_in_tips, radio_out_tips = "", ""
@@ -219,7 +219,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                 ##### len_option = len(options)
                                 ##### radio_in_tips = letters[:len_option]
                                 ##### driver_weekly.radio_check(radio_in_tips)
-                                auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                                break
                         elif quiz_type == "zhuanxiang":
                             options = driver_zhuanxiang.radio_get_options()
                             radio_in_tips, radio_out_tips = "", ""
@@ -246,7 +246,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                 ##### len_option = len(options)
                                 ##### radio_in_tips = letters[:len_option]
                                 ##### driver_zhuanxiang.radio_check(radio_in_tips)
-                                auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                                break
                     elif "单选题" in category:
                         if quiz_type == "daily":
                             options = driver_daily.radio_get_options()
@@ -289,7 +289,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                     ##### print('将使用默认选 B')     #by Sean
                                     ##### radio_in_tips = "B"
                                     ##### driver_daily.radio_check(radio_in_tips)
-                                    auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                                    break
                         elif quiz_type == "weekly":
                             options = driver_weekly.radio_get_options()
                             if '因此本题选' in tips:
@@ -326,7 +326,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                     ##### print('将使用默认选 B')     #by Sean
                                     ##### radio_in_tips = "B"
                                     ##### driver_weekly.radio_check(radio_in_tips)
-                                    auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                                    break
                         elif quiz_type == "zhuanxiang":
                             options = driver_zhuanxiang.radio_get_options()
                             if '因此本题选' in tips:
@@ -363,7 +363,7 @@ def answer_question(quiz_type, cookies, scores, score_all, quiz_xpath, category_
                                     ##### print('将使用默认选 B')     #by Sean
                                     ##### radio_in_tips = "B"
                                     ##### driver_zhuanxiang.radio_check(radio_in_tips)
-                                    auto.prompt("等待用户手动答题...完成后请在此按回车...")
+                                    break
                     else:
                         print("题目类型非法")
                         if quiz_type == "daily":
